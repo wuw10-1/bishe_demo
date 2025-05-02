@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图层视差页面</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .viewport {
+      position: relative;
+      width: 80vw;
+      aspect-ratio: 3 / 4;
+      overflow: hidden;
+    }
+
+    @media (orientation: landscape) {
+      .viewport {
+        aspect-ratio: 4 / 3;
+      }
+    }
+
+    .layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: transform 0.05s linear;
+    }
+
+    .layer3 {
+      left: 66.66%;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="viewport" id="viewport">
+    <img src="/pictrue/ng.jpg" class="layer layer1">
+    <img src="/pictrue/erceng.png" class="layer layer2">
+    <img src="/pictrue/zhut.png" class="layer layer3">
+  </div>
+
+  <script>
+    function handleOrientation(event) {
+      const gamma = event.gamma || 0; // 左右
+      const beta = event.beta || 0;   // 前后
+
+      // 简单限制角度范围
+      const maxAngle = 30;
+      const x = Math.max(-maxAngle, Math.min(maxAngle, gamma));
+      const y = Math.max(-maxAngle, Math.min(maxAngle, beta - 90)); // 修正直立位置
+
+      // 层级速度
+      const layer1 = document.querySelector('.layer1');
+      const layer2 = document.querySelector('.layer2');
+      const layer3 = document.querySelector('.layer3');
+
+      layer1.style.transform = `translate(${x * 0.35}px, ${y * 0.35}px)`;
+      layer2.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+      layer3.style.transform = `translate(${x * 0.1}px, ${y * 0.1}px)`;
+    }
+
+    // 权限处理（安卓 Chrome 需要）
+    function requestPermission() {
+      if (
+        typeof DeviceOrientationEvent !== "undefined" &&
+        typeof DeviceOrientationEvent.requestPermission === "function"
+      ) {
+        DeviceOrientationEvent.requestPermission()
+          .then(response => {
+            if (response === "granted") {
+              window.addEventListener("deviceorientation", handleOrientation);
+            } else {
+              alert("权限被拒绝");
+            }
+          })
+          .catch(console.error);
+      } else {
+        // 兼容旧浏览器
+        window.addEventListener("deviceorientation", handleOrientation);
+      }
+    }
+
+    // 自动请求权限
+    window.addEventListener("click", requestPermission, { once: true });
+  </script>
+
+</body>
+</html>
