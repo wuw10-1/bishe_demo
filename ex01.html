@@ -42,11 +42,23 @@
   </style>
 </head>
 <body>
+  <button id="startButton" style="
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  padding: 10px 20px;
+  font-size: 16px;
+  background: #fff;
+  border: none;
+  border-radius: 8px;
+">点击开始体验</button>
 
   <div class="viewport" id="viewport">
-    <img src="/pictrue/ng.jpg" class="layer layer1">
-    <img src="/pictrue/erceng.png" class="layer layer2">
-    <img src="/pictrue/zhut.png" class="layer layer3">
+    <img src="ng.jpg" class="layer layer1">
+    <img src="erceng.png" class="layer layer2">
+    <img src="zhut.png" class="layer layer3">
   </div>
 
   <script>
@@ -93,6 +105,42 @@
     // 自动请求权限
     window.addEventListener("click", requestPermission, { once: true });
   </script>
+<script>
+  const btn = document.getElementById('startButton');
 
+  btn.addEventListener('click', async () => {
+    // iOS 13+ 需要权限请求
+    if (typeof DeviceOrientationEvent !== "undefined" &&
+        typeof DeviceOrientationEvent.requestPermission === "function") {
+      try {
+        const response = await DeviceOrientationEvent.requestPermission();
+        if (response !== "granted") {
+          alert("权限被拒绝，无法获取陀螺仪数据。");
+          return;
+        }
+      } catch (e) {
+        alert("请求权限失败：" + e);
+        return;
+      }
+    }
+
+    // 隐藏按钮
+    btn.style.display = 'none';
+
+    // 启用陀螺仪监听
+    window.addEventListener("deviceorientation", (event) => {
+      const { beta, gamma } = event;
+
+      // 控制偏移量（适当缩放值）
+      const xOffset = gamma || 0;
+      const yOffset = beta || 0;
+
+      // 应用不同层的移动比例
+      document.querySelector('.layer1').style.transform = `translate(${xOffset * 0.35}px, ${yOffset * 0.35}px)`;
+      document.querySelector('.layer2').style.transform = `translate(${xOffset * 0.2}px, ${yOffset * 0.2}px)`;
+      document.querySelector('.layer3').style.transform = `translate(${xOffset * 0.1}px, ${yOffset * 0.1}px)`;
+    }, true);
+  });
+</script>
 </body>
 </html>
