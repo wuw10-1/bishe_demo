@@ -18,14 +18,15 @@
 
     .viewport {
       position: relative;
-      width: 80vw;
-      aspect-ratio: 3 / 4;
+      width: 100vw;
+      height: 100vh;
       overflow: hidden;
     }
 
     @media (orientation: landscape) {
       .viewport {
-        aspect-ratio: 4 / 3;
+        width: 100vw;
+        height: 100vh;
       }
     }
 
@@ -33,20 +34,23 @@
       position: absolute;
       top: 0;
       left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
       transition: transform 0.05s linear;
     }
 
     .layer3 {
-      left: 66.66%;
+      left: 0;
     }
   </style>
 </head>
 <body>
   <button id="startButton" style="
   position: absolute;
-  top: 20px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   z-index: 10;
   padding: 10px 20px;
   font-size: 16px;
