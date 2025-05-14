@@ -118,6 +118,7 @@
     window.addEventListener("click", requestPermission, { once: true });
   </script>
 <script>
+  
   const btn = document.getElementById('startButton');
 
   btn.addEventListener('click', async () => {
@@ -153,6 +154,52 @@
       document.querySelector('.layer3').style.transform = `translate(${xOffset * 0.1}px, ${yOffset * 0.1}px)`;
     }, true);
   });
+
+  // 错误码生成函数（可自定义格式）
+  function generateErrorCode(msg, url, line, col) {
+    const hash = (str) => str.split('').reduce((s, c) => s + c.charCodeAt(0), 0);
+    return `ERR-${hash(msg)}-${line || 0}-${col || 0}`;
+  }
+
+  // 捕捉同步 JS 错误
+  window.onerror = function (msg, url, lineNo, columnNo, error) {
+    const code = generateErrorCode(msg, url, lineNo, columnNo);
+    console.error(`[JS Error] ${msg} @ ${lineNo}:${columnNo}`, error);
+    showDebugInfo(`错误：${msg}<br>位置：${lineNo}:${columnNo}<br>错误码：<strong>${code}</strong>`);
+  };
+
+  // 捕捉 Promise 异步错误
+  window.addEventListener('unhandledrejection', function (event) {
+    const msg = event.reason?.message || String(event.reason);
+    const code = generateErrorCode(msg, '', 0, 0);
+    console.error(`[Promise Error] ${msg}`, event.reason);
+    showDebugInfo(`异步错误：${msg}<br>错误码：<strong>${code}</strong>`);
+  });
+
+  // 显示调试信息的函数（可定位页面底部）
+  function showDebugInfo(html) {
+    let debugBox = document.getElementById('debugInfo');
+    if (!debugBox) {
+      debugBox = document.createElement('div');
+      debugBox.id = 'debugInfo';
+      debugBox.style.cssText = `
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+        max-width: 90%;
+        background: rgba(255,0,0,0.8);
+        color: white;
+        font-size: 12px;
+        padding: 8px 10px;
+        border-radius: 6px;
+        z-index: 9999;
+        word-break: break-all;
+      `;
+      document.body.appendChild(debugBox);
+    }
+    debugBox.innerHTML = html;
+  }
+
 </script>
 </body>
 </html>
