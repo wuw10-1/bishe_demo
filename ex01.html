@@ -54,24 +54,35 @@
   </style>
 </head>
 <body>
-  <button id="startButton" style="
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-  padding: 10px 20px;
-  font-size: 16px;
-  background: #fff;
-  border: none;
-  border-radius: 8px;
-">点击开始体验</button>
 
-  <div class="viewport" id="viewport">
+    <button id="startButton" style=" position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    padding: 10px 20px;
+    font-size: 16px;
+    background: #fff;
+    border: none;
+    border-radius: 8px;">点击开始体验</button>
+  
+    <div class="viewport" id="viewport"></div>
+  
+   
+      const viewport = document.getElementById('viewport');
+      viewport.innerHTML = `
+        <img src="layer1.jpg" class="layer layer1">
+        <img src="layer2.png" class="layer layer2">
+        <img src="layer3.png" class="layer layer3">
+      `;
+  
+
+
+  <!-- <div class="viewport" id="viewport">
     <img src="layer1.jpg" class="layer layer1">
     <img src="layer2.png" class="layer layer2">
     <img src="layer3.png" class="layer layer3">
-  </div>
+  </div> -->
 
   <script>
     function handleOrientation(event) {
@@ -155,7 +166,7 @@
     }, true);
   });
 
-  // 错误码生成函数（可自定义格式）
+  // 错误码生成函数
   function generateErrorCode(msg, url, line, col) {
     const hash = (str) => str.split('').reduce((s, c) => s + c.charCodeAt(0), 0);
     return `ERR-${hash(msg)}-${line || 0}-${col || 0}`;
@@ -176,7 +187,7 @@
     showDebugInfo(`异步错误：${msg}<br>错误码：<strong>${code}</strong>`);
   });
 
-  // 显示调试信息的函数（可定位页面底部）
+  // 显示调试信息的函数
   function showDebugInfo(html) {
     let debugBox = document.getElementById('debugInfo');
     if (!debugBox) {
